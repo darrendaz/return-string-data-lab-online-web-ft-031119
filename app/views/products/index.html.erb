@@ -1,1 +1,30 @@
+<h1>Products</h1>
+<% @products.each do |product| %>
+  <h3><%= product.name %></h3>
+  <div id="product-<%= product.id %>"><%= truncate(product.description) %></div>
+  <button class="js-more" data-id="<%= product.id %>">More Info</button>
+<% end %>
 
+<script type="text/javascript" charset="utf-8">
+// adding event listener to the button class
+$(function() {
+  $(".js-more").on("click", function() {
+    // sets a variable 'id' to the data-id value 'product.id'
+    var id = $(this).data("id");
+    // executing jquery GET request using the 'id' with a callback function that takes 'description' as an argument
+    $.get("/products/" + id + "/description", function(description) {
+      // executing jquery GET request using the 'id' with a callback function that takes 'inventory' as an argument
+      $.get("/products/" + id + "/inventory", function(inventory) {
+        // Setting up the return HTML using string concatenation techniques
+        var inventoryText = "<strong>Available</strong>";
+        if(inventory === "false"){
+          inventoryText = "<strong>Sold Out</strong>";
+        }
+        var descriptionText = "<p>" + description + "</p><p>" + inventoryText + "</p>";
+        // output 'descriptionText' to id to product-id
+        $("#product-" + id).html(descriptionText);
+      });
+    });
+  });
+});
+</script>
